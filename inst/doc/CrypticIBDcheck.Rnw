@@ -1,0 +1,9 @@
+% Source for this vignette not yet avialable as an Sweave document. The
+% following commands tell the R package builder to add an entry for the
+% vignette in the package's vignette index.
+
+\documentclass[12pt]{article}
+% \VignetteIndexEntry{CrypticIBDcheck using data from a case-control candidate gene study}
+% \VignettePackage{CrypticIBDcheck}
+\begin{document}
+\end{document}

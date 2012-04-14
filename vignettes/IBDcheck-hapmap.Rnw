@@ -1,0 +1,480 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,natbib,verbatim,url}
+\usepackage[pdftex, bookmarks, bookmarksopen,
+pdfauthor={Annick Nembot-Simo, Brad McNeney, Jinko Graham},
+pdftitle={CrypticIBDcheck with genome-wide HapMap data}]{hyperref}
+
+\newcommand{\code}[1]{{\tt #1}}
+
+\title{CrypticIBDcheck vignette:\\Exploring cryptic relatedness with genome-wide data}
+\author{Annick Nembot-Simo, Jinko Graham and Brad McNeney}
+\date{\today}
+
+\usepackage{Sweave}
+\SweaveOpts{echo=TRUE, pdf=TRUE, eps=FALSE, keep.source=FALSE}
+
+\begin{document}
+\setkeys{Gin}{width=0.9\textwidth}
+
+%\VignetteIndexEntry{CrypticIBDcheck with genome-wide HapMap data}
+%\VignettePackage{CrypticIBDcheck}
+
+\maketitle
+\section{Introduction}
+We demonstrate the use of {\bf CrypticIBDcheck} to 
+explore cryptic relatedness 
+using genome-wide data from
+single nucleotide polymorphisms (SNPs) in 
+HapMap Phase 3, release \# 28. 
+The data are from the LWK (Luhya in Webuye, Kenya) population and were 
+downloaded from the HapMap website (\url{http://hapmap.ncbi.nlm.nih.gov/})
+in March 2012. While all LWK individuals are nominally unrelated, 
+the analysis of \cite{Pemberton10} has suggested several close
+relationships, which we uncover here. 
+
+Our analysis illustrates that a genome-wide panel of SNPs,
+%, at the marker density of HapMap Phase 3, 
+``thinned'' to a subset of 
+approximately independent markers, contains enough information 
+to identify relationships up to second degree (e.g., half-siblings),
+and to suggest relationships up to third degree (e.g., first cousins).
+The steps for the analysis are as follows.
+First, we download the data from HapMap and read it into an
+object of class \code{IBD} suitable for input to \code{IBDcheck()}.
+Second, PLINK \citep{Purcelletal2007} is used to perform the thinning.
+Third, the thinned data produced 
+by PLINK are passed to \code{IBDcheck()} to augment the
+\code{IBD} object with estimated 
+IBD coefficients. Fourth, the plot method of the \code{IBD} class
+is used to graphically display estimated IBD coefficients and explore possible
+relationships.  We compare the relationships
+that are suggested in this display to those described in 
+\citeauthor{Pemberton10}.
+
+The relationships among the LWK individuals inferred by \citeauthor{Pemberton10}
+are summarized in Table~\ref{tab:rships}. The data used by these authors,
+reportedly downloaded in September 2009, would be from HapMap realease \#27.
+Not all of the individuals in the \citeauthor{Pemberton10} dataset 
+are present in the current HapMap release \#28.
+Excluding pairs where one member is not currently available leaves
+2 parent-offspring, 5 full sibling and 4 second degree 
+(half sibling, grandparent-grandchild or avuncular) relationships.
+\begin{table}
+\label{tab:rships}
+\begin{center}
+\caption{Relationships among LWK individuals
+identified by \cite{Pemberton10} based on data downloaded on 
+September 9, 2009.  Individuals who are not available as of
+March 2012 are marked with an asterisk.}
+\begin{tabular}{lll}
+ & & \\
+First Individual & Second Individual & Relationship \\ \hline
+NA19381 & NA19382 & parent-offspring \\
+NA19432* & NA19434 & parent-offspring \\
+NA19432* & NA19444 & parent-offspring \\
+NA19470 & NA19469 & parent-offspring \\
+NA19046 & NA19045* & full sibling \\
+NA19352 & NA19347 & full sibling \\
+NA19374 & NA19373 & full sibling \\
+NA19397 & NA19396 & full sibling \\
+NA19434 & NA19444 & full sibling \\
+NA19470 & NA19443 & full sibling \\
+NA19027 & NA19311 & second degree \\
+NA19334 & NA19313 & second degree \\
+NA19380 & NA19382 & second degree \\
+NA19443 & NA19469 & second degree 
+\end{tabular}
+\end{center}
+\end{table}
+
+ 
+\section{Downloading the HapMap data}
+We use functions from the {\tt chopsticks} package \citep{chopsticks}
+to download data from the HapMap website.
+{\tt chopsticks} (formerly \code{snpMatrix}) 
+is automatically loaded with 
+\code{CrypticIBDcheck}:
+<<echo=TRUE>>=
+library(CrypticIBDcheck)
+@
+\code{chopsticks} implements the \code{snp.matrix} class, a data structure
+that compactly represents SNP genotype data, allowing
+storage and manipulation of genome-wide datasets in R. A 
+\code{snp.matrix} object is a matrix comprised of 
+genotyes stored as objects of type \code{raw}. 
+Genotypes are coded as 0, 1 or 2 copies of an index allele, 
+taken to be the first in an alphabetical list of the two 
+alleles at the SNP.
+Rows of the matrix correspond to subjects and columns to SNPs. 
+The \code{snp.matrix} object cannot include auxiliary data on either
+subjects or SNPs. Such information may be stored in data frames that 
+are separate from the \code{snp.matrix} object.
+Though there is no formal support for these auxiliary data frames,
+they are used frequently in the documentation and examples of the
+\code{chopsticks} package, and are given the names
+\code{subject.support} and \code{snp.support} for information
+on subjects and SNPs, respectively.
+
+We download the genotype data for each autosome from the 
+HapMap repository with the {\tt read.HapMap.data} function
+of \code{chopsticks}:
+<<eval=FALSE>>=
+lwkdat<-vector(mode="list",length=22)
+names(lwkdat)<-paste("chr",1:22,sep="")
+for(i in 1:22) {
+uu<-paste("http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/",
+"latest_phaseIII_ncbi_b36/hapmap_format/polymorphic/genotypes_chr",
+i,
+"_LWK_phase3.2_nr.b36_fwd.txt.gz",
+sep="")
+lwkdat[[i]]<-read.HapMap.data(uu)
+}
+@
+All URLs listed in this vignette were valid at the time of writing
+(April 2012), but are subject to change.
+Each list element \code{lwkdat[[i]]}, for chromosome
+\code{i}, will itself be a list, 
+with components \code{snp.data} and \code{snp.support}.
+The component \code{snp.data} is a \code{snp.matrix}
+object, while \code{snp.support} is a data frame that contains
+information on each SNP such as its alleles and physical map 
+position. A \code{subject.support} data frame is not created by
+\code{read.HapMap.data}, but the Appendix
+outlines an approach to create one yourself, if necessary.
+
+We can now combine data from the different chromosomes:
+<<eval=FALSE>>=
+snp.data<-lwkdat[[1]]$snp.data
+snp.support<-lwkdat[[1]]$snp.support[,c("Chromosome","Position")]
+for(i in 2:22) {
+  snp.data<-cbind(snp.data,lwkdat[[i]]$snp.data)
+  snp.support<-rbind(snp.support,lwkdat[[i]]$snp.support[,c("Chromosome","Position")])
+}
+@
+and remove SNPs with multiple map positions:
+<<eval=FALSE>>=
+dd<-duplicated(snp.support)
+snp.support<-snp.support[!dd,]
+snp.data<-snp.data[,!dd]
+@
+
+Finally, we may use the function \code{new.IBD()}
+to create an object of class \code{IBD}. 
+We consider all members of the sample to be randomly sampled
+from the population, so that they will all be used by 
+\code{IBDcheck()} to estimate conditional IBS probabilities.
+<<eval=FALSE>>=
+dat<-new.IBD(snp.data,Chromosome=snp.support$Chromosome,
+Position=snp.support$Position, popsam=rep(TRUE,nrow(snp.data)))
+@
+
+\section{Using PLINK to thin the marker set}
+\label{sec:plink}
+
+We use PLINK's facilities for linkage-disequilibrium-based SNP pruning
+to thin the marker set to one in which all SNPs are approximately 
+independent of each other. In what follows we assume that 
+PLINK is available on the user's system and 
+is part of their \code{path}. To verify that PLINK is available, 
+type the following from R:
+<<eval=FALSE>>=
+system("plink --no-web --help")
+@
+You should see a summary of the program's help options.
+{\bf CrypticIBDcheck} does not include any formal interface with
+PLINK. Instead, we have written a convenience function called
+\code{thin} that can be used to call PLINK and perform the thinning.
+The source code for \code{thin} is contained in the \code{scripts}
+directory of the package, and can be
+\code{source()}'d into an R session with:
+<<>>=
+source(file.path(system.file(package="CrypticIBDcheck"),"scripts","thin.R"))
+@
+The first argument to \code{thin} is an \code{IBD} object. The remaining
+arguments, \code{win}, \code{shift} and 
+\code{r2thresh}, are passed to PLINK to control how the thinning is done.
+PLINK's algorithm for selecting SNPs to be removed is a moving window approach
+comprised of the following steps:
+\begin{enumerate}
+\item Fix a window of width \code{win}.
+\item Calculate pairwise squared allelic correlations $r^2$ 
+for all SNPs in the window.
+\item For each pair with allelic correlation greater than the threshold 
+\code{r2thresh}, discard one member of the pair. 
+(There is some ambiguity in the PLINK documentation about the 
+how this step is implemented.)
+\item Move the window by \code{shift} SNPs and repeat steps 1-3. 
+\end{enumerate}
+In the PLINK documentation, Section 10, there is an example that suggests
+values \code{win=100}, \code{shift=25} and \code{r2thresh=0.2}. 
+In gene-drop simulations, we 
+have found that a much stricter \code{r2thresh} of between
+0.005 and 0.01
+is required to reduce dependence between markers
+for inferring cryptic relatedness with genome-wide SNP data.
+The \code{IBD} object \code{dat} can be thinned with 
+an \code{r2thresh} value of 0.005 as follows:
+<<eval=FALSE>>=
+t.dat<-thin(dat,win=100,shift=25,r2thresh=0.005)
+@
+Each call to \code{thin()} will create, and subsequently delete, the
+following files in the user's working directory:
+mydata.ped, mydata.map, plink.log, plink.prune.in, and plink.prune.out.
+
+
+\section{Using IBDcheck() to estimate IBD coefficients}
+
+We use {\tt IBDcheck()} to estimate IBD coefficients for pairs of 
+study subjects and for pairs of simulated subjects.
+The simulated relationships considered in this example are:
+MZ twins/duplicates, parent-offspring, full siblings, 
+half siblings,  and first cousins. In addition, pairs of unrelated
+subjects are simulated.
+The arguments to \code{IBDcheck()} are: (i) an \code{IBD} object;
+(ii) a list of parameters that controls QC filtering,
+created by the \code{filter.control()} function; and (iii) a list
+of parameters that controls the simulations, created by the 
+\code{sim.control()} function. The last two arguments are optional,
+and if not specified are given default values described in the 
+help files of \code{filter.control()} and \code{sim.control()}.
+We leave the QC filtering options at their defaults. We specify 
+that an LD model need not be fit, and specify the relationships
+to simulate as follows:
+<<eval=FALSE>>=
+ss<-sim.control(simulate=TRUE,fitLD=FALSE,
+rships=c("unrelated", "MZtwins", "parent-offspring", "full-sibs", 
+"half-sibs", "cousins"), nsim=rep(200,6))
+cibd<-IBDcheck(t.dat,simparams=ss)
+@
+On Unix-like systems, 
+the call to \code{IBDcheck()} will print the following 
+warning for each chromosome of data:
+\begin{verbatim}
+Warning: parameter file has no LD model appended.
+Assuming linkage equilirbiurm and given allele frequencies.
+\end{verbatim}
+These warnings are to be expected and can be ignored. 
+
+\section{Plotting the IBD object}
+We can now plot the IBD object {\tt cibd} as follows:
+<<eval=FALSE>>=
+ibdpairs<-plot(cibd)
+@
+In this example, the plotting function produces six plots, shown in 
+Figures \ref{fig1}--\ref{fig3}, and an output data frame 
+\code{ibdpairs} that contains information on study pairs flagged 
+by the last four plots in Figures \ref{fig2} and \ref{fig3}: 
+\begin{verbatim}
+   member1 member2         pz0       pz1     relationship
+1  NA19381 NA19382 0.004458855 1.0024774 parent-offspring
+2  NA19470 NA19469 0.007283001 1.0123109 parent-offspring
+3  NA19470 NA19443 0.249534110 0.4864767        full sibs
+4  NA19397 NA19396 0.236143770 0.5230856        full sibs
+5  NA19352 NA19347 0.229077961 0.5164333        full sibs
+6  NA19434 NA19444 0.265322306 0.5164379        full sibs
+7  NA19374 NA19373 0.228584986 0.5114019        full sibs
+8  NA19027 NA19311 0.484353454 0.5088007        half sibs
+9  NA19334 NA19313 0.500990846 0.5092976        half sibs
+10 NA19443 NA19469 0.541079762 0.4624135        half sibs
+11 NA19380 NA19382 0.444633963 0.5613230        half sibs
+12 NA19380 NA19381 0.660470086 0.3343943          cousins
+13 NA19397 NA19350 0.846029547 0.1581139          cousins
+14 NA19028 NA19385 0.860153761 0.1434600          cousins
+15 NA19359 NA19309 0.681516041 0.3286831          cousins
+16 NA19452 NA19451 0.765855213 0.2496486          cousins
+\end{verbatim}
+
+The first plot to appear (Figure~\ref{fig1}, left panel)
+is non-clickable and shows the 
+estimated IBD coefficients for all pairs of study subjects,
+along with the prediction ellipse for unrelated, simulated pairs.
+Subsequent plots (Figure~\ref{fig1}, right panel and 
+all of Figures~\ref{fig2} and \ref{fig3})
+are clickable and correspond to each relationship
+requested in the call to \code{IBDcheck()}. These relationship-specific
+plots are for identifying pairs of study subjects which could have the
+relationship. The plotting regions are
+restricted to the neighborhood of the prediction ellipse for
+the simulated pairs of that relationship, which is also drawn. 
+If, however, the plotting region overlaps with the 
+prediction ellipse for simulated unrelated pairs, 
+the ellipse for simulated unrelated pairs is drawn as well.
+Points falling within the 
+prediction ellipse for the relationship
+and outside the prediction 
+ellipse for unrelated pairs are automatically flagged. 
+In addition, 
+users may click on points of study pairs that appear to be related 
+but are not automatically flagged, such as the apparent parent-offspring
+pair \code{NA19470:NA19469} that appears just outside the prediction
+ellipse for simulated parent-offspring pairs.
+The data frame \code{ibdpairs} is comprised of information on pairs
+that have been flagged on the different plots, 
+either automatically or interactively by the user through
+clicking the mouse.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{fig005_all.pdf}
+\includegraphics[width=0.45\textwidth]{fig005_MZ.pdf}
+\caption{All observed pairs with the prediction ellipse for unrelated pairs
+(left panel) superposed, and the prediction ellipse 
+for MZ twins/duplicates (right panel). 
+There are no estimated IBD coefficients in the vicinity of
+the prediction ellipse for MZ twins/duplicates.}
+\label{fig1}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{fig005_po.pdf}
+\includegraphics[width=0.45\textwidth]{fig005_fs.pdf}
+\caption{Observed pairs with prediction ellipses for parent-offspring pairs 
+(left panel) and full siblings (right panel) superposed.}
+\label{fig2}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{fig005_hs.pdf}
+\includegraphics[width=0.45\textwidth]{fig005_co.pdf}
+\caption{Observed pairs with prediction ellipses for 
+second degree relative pairs such as half sibling (left panel) 
+and third degree relative pairs such as first cousins (right panel) 
+superposed. In the right panel, the prediction ellipse based on
+pairs of unrelated pairs of subjects (magenta line) appears
+in the bottom-right of the plot.}
+\label{fig3}
+\end{figure}
+
+The pairs of subjects identified by plotting the \code{IBD}
+object \code{cibd} include all parent-offspring, full sibling and 
+second order relationships in the currently-available LWK sample
+that were identified by \citeauthor{Pemberton10}. 
+These authors did not attempt to identify 
+first cousins, because the likelihood method they
+used is not considered to be
+reliable for inference of cousin relationships \citep{Boehnke97,Epstein00}.
+The graphical approach of 
+{\bf CrypticIBDcheck} is exploratory rather than inferential,
+and allows the user to informally explore possible first-cousin relationships.
+The following pairs were identified as potential
+first cousins (rearranged from the 
+original output for convenience):
+\begin{verbatim}
+member1 member2         pz0       pz1     relationship
+NA19380 NA19381 0.660470086 0.3343943          cousins
+NA19359 NA19309 0.681516041 0.3286831          cousins
+NA19452 NA19451 0.765855213 0.2496486          cousins
+NA19397 NA19350 0.846029547 0.1581139          cousins
+NA19028 NA19385 0.860153761 0.1434600          cousins
+\end{verbatim}
+It seems plausible that the first three pairs are relatives,
+as their estimated IBD coefficients are clearly separated 
+from the magenta prediction ellipse for
+unrelated pairs that appears in the bottom-right of 
+the display in the right panel of Figure~\ref{fig3}.
+However, the last two pairs in this list are not 
+clearly separated from the cloud of points in and around
+the prediction ellipse for unrelated pairs, and may be
+unrelated pairs whose estimated IBD coefficients fall in the tail
+of that distribution. 
+
+\section{Summary}
+In this vignette we have shown how to use {\bf CrypticIBDcheck} to explore
+cryptic relatedness with genome-wide SNP data from the HapMap LWK sample. 
+The full panel of SNPs was thinned to an approximately independent
+subset, from which IBD coefficients were estimated.
+The exploratory display of these estimated IBD coefficients, along 
+with those from simulated pairs of known relationship,
+enabled us to identify all close relationships in the
+currently-available LWK data described in
+\cite{Pemberton10}. In addition, our exploratory approach
+was able to suggest three
+possible first-cousin relationships that were not identified by 
+\citeauthor{Pemberton10}, due to limitations of the formal
+likelihood-based methods they used.
+
+In our simulations, we have found that 
+correctly specifying the underlying LD model is important
+for getting the reference clusters right.
+For example, with dense genome-wide SNPs, when pairs 
+from parent-offspring or half-sibling (i.e., unilineal) relationships  
+are simulated under a mis-specified model of linkage equilibrium, 
+their estimated coefficients for two alleles IBD tend to
+be slightly positive, even though the true IBD coefficients are zero.
+On the IBD plot, this has the effect of shifting
+reference clusters for half-siblings down and to the left,
+away from the diagonal line of slope $-1$ where they
+should lie. For parent-offspring pairs, the reference
+clusters are shifted downwards. This shifting problem
+is eliminated by thinning the SNPs to an approximately 
+independent set, as discussed in Section~\ref{sec:plink}.
+
+For genome-wide data, an alternate approach to 
+exploring cryptic relatedness is described in Section 5.2
+of the \code{DataCleaning}
+vignette in the {\bf GWASTools} Bioconductor package \citep{Gogarten12}. 
+The \code{ibdPlot()} function of {\bf GWASTools} treats estimates
+of IBD coefficients as observed values and uses results from
+\cite{HillWeir11} on the moments of the distribution of IBD coefficients
+to produce reference clusters.  
+{\em Ad hoc} inflations of these clusters are suggested to
+account for the fact that IBD coefficients must be estimated.
+
+\section{Appendix}
+
+In this vignette, additional information on subjects is not needed and so there
+is no need to create a \code{subject.support} data frame.
+However, for other HapMap populations comprised of mother-father-offspring
+trios, such as CEU 
+(Utah residents with Northern and Western European ancestry from the 
+CEPH collection), information on known relationships would be required
+to explore cryptic relatedness. If, for example, we wish to subset
+the CEU sample to include only the mothers and fathers, 
+we might proceed as follows:
+<<eval=FALSE>>=
+uu<-paste("http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/",
+"latest_phaseIII_ncbi_b36/relationships_w_pops_121708.txt",sep="")
+hapmap.info<-read.table(uu,header=TRUE,as.is=TRUE)
+subject.support<-hapmap.info[hapmap.info$population=="CEU",]
+parent<-(subject.support$mom==0 | subject.support$dad==0)
+subject.support<-subject.support[parent,]
+rm(hapmap.info)
+@
+where we have used the fact that mothers and fathers are ``founders'' 
+and therefore have no mother (\code{mom==0}) or father 
+(\code{dad==0}) in the trio.
+The subject information obtained by the above code snippet is for 
+all CEU parents in the 
+\verb+relationships_w_pops_121708.txt+
+file. However, the parents with
+genotype data in the current release could be a subset of these.
+To subset \code{subject.support} to the subjects with genotype data
+in a \code{snp.matrix} object called \code{snp.data},
+we could proceed as follows:
+<<eval=FALSE>>=
+id=rownames(snp.data)
+subject.support=subject.support[match(id,subject.support$IID),]
+@
+
+
+\bibliographystyle{jss}
+\bibliography{IBDcheck-hapmap}
+ 
+
+\end{document}
+
+
+%\begin{figure}[hb]
+%   \centering
+%   \includegraphics[width=6in, height=6in, angle=0, 
+%scale=0.9]{LDheatmap-multiple.pdf}
+% \caption{Modified heat maps displayed together.  The heat map on the left 
+%uses a  `grey' (\code{grey.colors(20)}) color-scale.  The heat map on 
+%the right uses a `white-to-red' (\code{heat.colors(20)}) color-scale. 
+%White grid-lines were added to the heat map on the left and the  
+%color of the text \code{"Physical Length:8.9kb"} was changed from black 
+%to blue in the heat map on the right.}  
+%   \label{multiple.plot}
+%\end{figure}

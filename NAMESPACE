@@ -1,0 +1,2 @@
+export(countIBS,IBDcheck,new.IBD,IBD,SNPgenmap,filter.control,sim.control)
+S3method(plot,IBD)
