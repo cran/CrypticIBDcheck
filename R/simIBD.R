@@ -89,7 +89,7 @@ GMLDfct=function(gdat,simparams){
      if(is.null(simparams$cl)) { # no cluster: use lapply 
        unlist(lapply(gdat,parfile.fitLD))
      } else { # can use clusterApplyLB to distribute work over cluster
-       require(snow)
+       require(parallel)
        unlist(clusterApplyLB(simparams$cl,gdat,parfile.fitLD))
      }
 }
@@ -175,7 +175,7 @@ gendrp=function(gdat,peddat,nreps,simparams){
     if(is.null(simparams$cl)) {
       snpmatlist<-lapply(gdat,doGeneDrops,peddat,nreps,simparams)
     } else {
-      require(snow)
+      require(parallel)
       snpmatlist<-clusterApply(simparams$cl,gdat,doGeneDrops,peddat,nreps,simparams)
     }
         

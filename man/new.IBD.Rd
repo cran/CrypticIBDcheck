@@ -83,4 +83,18 @@ Annick Joelle Nembot-Simo, Jinko Graham and Brad McNeney
 data(Nhlsim)
 popsam<-Nhlsim$csct==0 #controls
 dat<-new.IBD(Nhlsim$snp.data,Nhlsim$chromosome,Nhlsim$physmap,popsam)
+
+\dontrun{
+# Read PLINK-formatted data via the read.snps.pedfile() function of the 
+# chopsticks package 
+# [source("http://bioconductor.org/biocLite.R"); biocLite("chopsticks") to install]
+# Assume PLINK data is in files mydata.ped and mydata.map.
+require(chopsticks)
+mydata = read.snps.pedfile("mydata.ped")
+# mydata is now a list with elements mydata$snp.data, mydata$snp.support and 
+# mydata$subject.support. Chromosome number and physical position of the SNPs 
+# are in mydata$snp.support$chromosome and mydata$snp.support$position, respectively.
+dat<-new.IBD(mydata$snp.data,mydata$snp.support$chromosome,
+             mydata$snp.support$position,popsam=rep(1,nrow(mydata$snp.support)))
+}
 }

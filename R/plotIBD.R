@@ -168,7 +168,6 @@ flagPairs<-function(dat,simdat,rship,col,coverage,simdat.unrel,coverage.u, ...) 
 
 get.ellipse<-function(x,coverage,...) {
   if(is.null(x)) { return(NULL) }
-  require(ellipse)
   if(sd(x[,1])==0) {
     # FIX ME: a bit of a kludge right now. 
     return(ellipse(0,

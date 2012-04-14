@@ -1,0 +1,19 @@
+citHeader("To cite CrypticIBDcheck in publications use:")
+
+citEntry(entry="Article",
+         title = "CrypticIBDcheck: an R package for checking cryptic relatedness in 
+                  nominally unrelated individuals.",
+         author = personList(as.person("A. Nembot-Simo"),
+		         as.person("J. Graham"),
+		         as.person("B. McNeney")),
+         journal= "Source Code for Biology and Medicine",
+         volume	= "8:5",
+         year	= 2013,
+         url	="http://www.scfbm.org/content/8/1/5",
+
+         textVersion =
+       paste("Nembot-Simo A, Graham J, McNeney B (2013).",
+         "CrypticIBDcheck: an R package for checking cryptic relatedness in 
+                  nominally unrelated individuals.",
+        "Source Code for Biology and Medicine, 8:5")
+)

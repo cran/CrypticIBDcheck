@@ -136,6 +136,9 @@ follows:
 \code{\link{SNPgenmap}}
 }
 \examples{
+# These examples use the package dataset Nhlsim. For examples of how to
+# prepare data in other formats for use by IBDcheck(), please see the 
+# documentation for new.IBD().
 ##################################################3
 # Part I: No simulations
 # Example 1) use all default settings; i.e., filter SNPs but do not simulate data
