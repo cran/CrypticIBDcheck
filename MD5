@@ -1,4 +1,4 @@
-3e23caa61b6284c6aae3454c6f40d909 *DESCRIPTION
+ce7b464248dc52a12330bba2510bca73 *DESCRIPTION
 ae6f75a3bfe1fb6b19e7df3326d80a04 *NAMESPACE
 c167da9c7d2348be9e64e76300fc03cd *R/IBD-class.R
 5323a70bc518f476eceec57898a586be *R/IBDcheck.R
@@ -13,10 +13,10 @@ ced569aed5cb69896b2eec6b395cf502 *R/simIBD.R
 5f437b99811e93a818b3aa3b3db26647 *R/zzz.R
 f8e6a03a523edea22a42cafd23765630 *data/Nhlsim.RData
 56867363d807115eef7760673f3803b7 *data/RutgersMapB36.RData
-4145fa4aa14c6c98babfe5c46446ae75 *inst/doc/CrypticIBDcheck.Rnw
-b8c080a457405770395489e8ceabaa17 *inst/doc/CrypticIBDcheck.pdf
-94ac025df6d433867c0641caccb94ae3 *inst/doc/IBDcheck-hapmap.Rnw
-11fece3e6102d3404912950d7b8aaabf *inst/doc/IBDcheck-hapmap.pdf
+765fa5b198eebf0bf4bdedf445f9d45b *inst/doc/CrypticIBDcheck.Rnw
+e7b8d22df67f012df2188dc8fc7ab1a1 *inst/doc/CrypticIBDcheck.pdf
+ac6a847d6b4918ee9d88fdec8b0c7a5c *inst/doc/IBDcheck-hapmap.Rnw
+2a922fe0afedcf9ce18ca463f35300ef *inst/doc/IBDcheck-hapmap.pdf
 2f5dbbbd1d759d8467a3a1c60be01650 *inst/scripts/thin.R
 00ab1ba102fc885fb385a2046dfe3b8b *man/CrypticIBDcheck-package.Rd
 4bbecb413eb3b22244ecae0b0acd7add *man/IBD.Rd
@@ -34,8 +34,9 @@ bfac2693c606256f19dda0fab87e7240 *man/sim.control.Rd
 e4fdd2a3e75e08a61eb714e9c6a8c3cf *src/IBDestp.c
 714573746c49f96028fd59ee5f4e494f *src/IBDestp.h
 39a289061f81ca5107c75432f4dfc9b5 *src/countIBS.c
-4145fa4aa14c6c98babfe5c46446ae75 *vignettes/CrypticIBDcheck.Rnw
-94ac025df6d433867c0641caccb94ae3 *vignettes/IBDcheck-hapmap.Rnw
+d752dfb4eb9acf938f062d75e6d6e9d8 *vignettes/CibdCbib.bib
+765fa5b198eebf0bf4bdedf445f9d45b *vignettes/CrypticIBDcheck.Rnw
+ac6a847d6b4918ee9d88fdec8b0c7a5c *vignettes/IBDcheck-hapmap.Rnw
 4a6038abb1810b39143cd14f24c058f8 *vignettes/IBDcheck-hapmap.bib
 697b50193d60e36cd3ae4f2a18752ab1 *vignettes/Sweave.sty
 1f5aeb0993bbc807aa59c56181a9efa5 *vignettes/fig005_MZ.pdf
@@ -47,3 +48,9 @@ b3265b9bec6758d3688f1a87ec87c2a8 *vignettes/fig005_hs.pdf
 48669c4e55fe2392469dcf01641c5c06 *vignettes/jss.bst
 4bb70cb5174ffa07c9afe8de5aa7ebf5 *vignettes/jss.cls
 b282023f5f329fae46eb91f19b0939ee *vignettes/jss.pdf
+9e494c6b440f4b7164f1e7f6f9d23c18 *vignettes/outfig1.pdf
+c34f2fa64d61e26f4a75a269323d29e3 *vignettes/outfig2.pdf
+867d823e55961a9ad2c05cb8d72171af *vignettes/outfig3.pdf
+c101a77ffd6793d6950511e09528c249 *vignettes/outfig4.pdf
+459e8812642a3e8bbbc896dce0c7fe5e *vignettes/outfig5.pdf
+9b5e58fda2dc5d55fe006c06540d08ed *vignettes/ped.pdf

@@ -237,7 +237,7 @@ of parameters that controls the simulations, created by the
 \code{sim.control()} function. The last two arguments are optional,
 and if not specified are given default values described in the 
 help files of \code{filter.control()} and \code{sim.control()}.
-We leave the QC filtering options at their defaults. We specify 
+We leave the QC filtering options at their default values. We specify 
 that an LD model need not be fit, and specify the relationships
 to simulate as follows:
 <<eval=FALSE>>=
@@ -383,8 +383,9 @@ of that distribution.
 \section{Summary}
 In this vignette we have shown how to use {\bf CrypticIBDcheck} to explore
 cryptic relatedness with genome-wide SNP data from the HapMap LWK sample. 
-The full panel of SNPs was thinned to an approximately independent
-subset, from which IBD coefficients were estimated.
+The full panel of 1,475,584 SNPs was aggresively
+thinned to an approximately independent
+subset of size 14,289, from which IBD coefficients were estimated. 
 The exploratory display of these estimated IBD coefficients, along 
 with those from simulated pairs of known relationship,
 enabled us to identify all close relationships in the
@@ -408,7 +409,7 @@ reference clusters for half-siblings down and to the left,
 away from the diagonal line of slope $-1$ where they
 should lie. For parent-offspring pairs, the reference
 clusters are shifted downwards. This shifting problem
-is eliminated by thinning the SNPs to an approximately 
+is eliminated by aggresively thinning the SNPs to an approximately 
 independent set, as discussed in Section~\ref{sec:plink}.
 
 For genome-wide data, an alternate approach to 
