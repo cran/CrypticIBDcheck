@@ -5,11 +5,11 @@ IBDest.study <- function(snpobjtr, cdlibs) {
    excl<-is.na(cdlibs[,1]) 
    snpobjtr<-snpobjtr[,!excl]
    cdlibs<-cdlibs[!excl,]
-   out <- .Call("IBDest_study", t(snpobjtr@.Data), 
+   out <- .Call(IBDest_study, t(snpobjtr@.Data), 
 	nrow(snpobjtr),
 	ncol(snpobjtr), 
 	t(cdlibs),
-	new.env(), PACKAGE="CrypticIBDcheck")
+	new.env())
    pz0 <- matrix(out[[1]], nrow(snpobjtr), nrow(snpobjtr), byrow=TRUE)
    pz1 <- matrix(out[[2]], nrow(snpobjtr), nrow(snpobjtr), byrow=TRUE)
    pz2 <- matrix(out[[3]], nrow(snpobjtr), nrow(snpobjtr), byrow=TRUE)
@@ -28,11 +28,11 @@ IBDest.sim <- function(snpmat, cdlibs) {
    excl<-is.na(cdlibs[,1]) 
    snpmat<-snpmat[,!excl]
    cdlibs<-cdlibs[!excl,]
-   out <- .Call("IBDest_sim", t(snpmat@.Data), 
+   out <- .Call(IBDest_sim, t(snpmat@.Data), 
 	nrow(snpmat)/2,
 	ncol(snpmat), 
 	t(cdlibs),
-	new.env(), PACKAGE="CrypticIBDcheck")
+	new.env())
   names(out) <- c("pz0", "pz1", "pz2")
   data.frame(out)
 }

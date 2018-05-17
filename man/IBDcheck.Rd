@@ -81,17 +81,12 @@ components of this class.
 }
 \references{
 Leung H-T (2012). chopsticks: The snp.matrix and X.snp.matrix
-classes. R package version 1.20.0. URL
-\url{http://outmodedbonsai.sourceforge.net/}
+classes. R package version 1.20.0.
 
 Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MA, Bender D, Maller J, 
 Sklar P, de Bakker PI, Daly MJ, Sham PC.
 PLINK: a tool set for whole-genome association and population-based 
 linkage analyses.  Am J Hum Genet. 2007 Sep;81(3):559-75.
-
-Tierney L, Rossini AJ, Li N, Sevcikova H (2011). 
-snow: Simple Network of Workstations. R package version 0.3-8, URL
-\url{http://CRAN.R-project.org/package=snow}.
 }
 \author{
 Annick Joelle Nembot-Simo, Jinko Graham and Brad McNeney
@@ -104,15 +99,14 @@ be computationally demanding for data sets with more than about
 1000 SNPs. 
 In Appendix B of the vignette \code{CrypticIBDcheck} we
 describe strategies for making computations feasible by 
-use of a \pkg{snow} cluster (Tierney \emph{et al.}, 2011).
+use of a \pkg{parallel} cluster (Tierney \emph{et al.}, 2011).
 
 Users may also need to increase the amount of java heap space for
 some computations.
 The computation for fitting the 
 LD model is done in java, using functions from Alun
 Thomas' suite of Java Programs for Statistical Genetics and
-Computational Statistics (JPSGCS), available at the website
-\url{http://balance.med.utah.edu/wiki/index.php/JPSGCS}.
+Computational Statistics (JPSGCS).
 The JPSGCS java programs are accessed
 by R-wrappers provided by the \pkg{rJPSGCS} R package. When \pkg{rJPSGCS}
 is loaded (automatically by loading \pkg{CrypticIBDcheck}), it 
@@ -221,7 +215,7 @@ ff<-filter.control(filter=FALSE) # No need to re-filter the SNP data in cibd8
 cibd9<-IBDcheck(cibd8,simparams=ss,filterparams=ff)
 
 # Example 10) Distribute fitting of LD models and gene drop simulations for
-# chromosomes 20, 21 and 22 across a snow cluster running on a local computer. 
+# chromosomes 20, 21 and 22 across a cluster running on a local computer. 
 # See the package vignette, vignette("CrypticIBDcheck") for an example of
 # running IBDcheck in batch mode on a compute cluster. Simulate pairs of
 # subjects from each of the default relationships: unrelated, MZ twins/duplicate, 
@@ -229,7 +223,7 @@ cibd9<-IBDcheck(cibd8,simparams=ss,filterparams=ff)
 cind<-(Nhlsim$chromosome == 20 | Nhlsim$chromosome == 21 | Nhlsim$chromosome == 22)
 dat<-new.IBD(Nhlsim$snp.data[,cind],Nhlsim$chromosome[cind],
                 Nhlsim$physmap[cind],popsam)
-library(snow)
+library(parallel)
 cl<-makeCluster(3,type="SOCK")
 clusterEvalQ(cl,library("CrypticIBDcheck"))
 ss<-sim.control(simulate=TRUE,fitLD=TRUE,cl=cl)

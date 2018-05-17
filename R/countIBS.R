@@ -5,8 +5,8 @@ countIBS <- function(x) {
   mni0=matrix(0,n,n) #matrix of count of snps with IBS=0 for pairs of individuals
   mni1=matrix(0,n,n)  
   mni2=matrix(0,n,n)
-  out <- .C("countIBS", t(x@.Data), as.integer(n),  as.integer(ncol(x)),
-          as.integer(mni0), as.integer(mni1), as.integer(mni2), PACKAGE="CrypticIBDcheck")
+  out <- .C(count_IBS, t(x@.Data), as.integer(n),  as.integer(ncol(x)),
+          as.integer(mni0), as.integer(mni1), as.integer(mni2))
   out[[4]] <- matrix(out[[4]], nrow=n, byrow=TRUE)
   out[[5]] <- matrix(out[[5]], nrow=n, byrow=TRUE)
   out[[6]] <- matrix(out[[6]], nrow=n, byrow=TRUE)

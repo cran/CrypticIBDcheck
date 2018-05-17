@@ -29,7 +29,7 @@ nbs=ncol(snpobjt)
  SNP.support1<-SNP.support1[maft,]
 
 #samples call rate test
- callrvt=(row.summary(snpobjt1)$Call.rate>=filter$samplecallrate) 
+ callrvt=(chopsticks::row.summary(snpobjt1)$Call.rate>=filter$samplecallrate) 
  snpobjt1<-snpobjt1[(callrvt),]
  snpmatlist1$subject.support<-snpmatlist1$subject.support[(callrvt),]
 

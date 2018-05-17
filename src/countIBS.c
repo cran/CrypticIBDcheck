@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void countIBS(char *x, int *rows, int *ncol, int *m0, int *m1, int *m2) {
+void count_IBS(char *x, int *rows, int *ncol, int *m0, int *m1, int *m2) {
   int nrow = *rows;
   int nsnp = *ncol;
   int i, j, i1, j1, i2, k, d;

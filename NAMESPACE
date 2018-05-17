@@ -1,2 +1,12 @@
 export(countIBS,IBDcheck,new.IBD,IBD,SNPgenmap,filter.control,sim.control)
+importFrom("grDevices", "devAskNewPage")
+importFrom("graphics", "lines", "plot", "title")
+importFrom("methods", "is", "new")
+importFrom("stats", "approxfun", "cor", "pnorm", "qchisq", "quantile",
+           "rbinom", "sd", "var")
+importFrom("utils", "flush.console")
+importFrom("rJPSGCS","GeneDrops","read.pedfile","write.pedfile","write.parfile","FitGMLD")
+importFrom("car","showLabels")
+importFrom("ellipse","ellipse")
 S3method(plot,IBD)
+useDynLib("CrypticIBDcheck", .registration = TRUE)

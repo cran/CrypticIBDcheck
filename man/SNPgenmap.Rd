@@ -58,6 +58,7 @@ gmap <- SNPgenmap(Nhlsim$physmap,Nhlsim$chromosome)
 # interpolation of genetic map positions on chromosome 1.  
 # NB: Interpolant is not necessarily monotone increasing, which can lead to a 
 # genetic map on which markers are re-ordered relative to the physical map.
+data("RutgersMapB36")
 chrmap<-splinefun(RutgersMapB36[["chr1"]]$Build36_map_physical_position,
                   RutgersMapB36[["chr1"]]$Sex.averaged_map_position)
 c1ind<-(Nhlsim$chromosome=="chr1")

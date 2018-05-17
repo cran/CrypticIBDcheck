@@ -150,11 +150,11 @@ ff<-filter.control(filter=FALSE) # No need to re-filter the SNP data in cibd3
 cibd4<-IBDcheck(cibd3,simparams=ss,filterparams=ff)
 
 # Distribute fitting of LD models and gene drop simulations for each 
-# chromosome across a snow cluster running on a local computer.  See the 
+# chromosome across a cluster running on a local computer.  See the 
 # package vignette, vignette("CrypticIBDcheck") for an example of running
 # IBDcheck in batch mode on a compute cluster. Save the updated IBD object
 # in cibd5.
-library(snow)
+library(parallel)
 cl<-makeCluster(3,type="SOCK")
 clusterEvalQ(cl,library("CrypticIBDcheck"))
 ss<-sim.control(simulate=TRUE,cl=cl) # Leave all other sim params at defaults

@@ -10,4 +10,10 @@ Medicine, and available at \\
 \bigskip
 
 \url{http://www.scfbm.org/content/8/1/5}
+
+\bigskip
+NB: As of version 0.3-1, {\tt snow} has been replaced by {\tt parallel}
+for splitting computations across a cluster. {\tt parallel}
+includes all functions from {\tt snow} that are used by 
+{\tt CrypticIBDcheck}. 
 \end{document}

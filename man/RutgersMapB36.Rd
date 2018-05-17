@@ -9,7 +9,7 @@ physical and genetic map positions for a collection of markers on chromosome 1 t
 This dataset is list comprised of  data frames corresponding to chromosomes 1 to 22. Each data frame has information on physical and genetic map positions for a
 collection of markers on the corresponding chromosome.
 }
-\usage{data(RutgersMapB36)}
+\usage{data("RutgersMapB36")}
 \format{
 The format of the dataset is a list of 22 elements. Each element is a data frame corresponding to a chromosome with nine columns: 
 \tabular{rlll}{
@@ -26,7 +26,7 @@ The format of the dataset is a list of 22 elements. Each element is a data frame
 }
 \source{
 The data were obtained from the Rutgers map (see
-\url{http://compgen.rutgers.edu/RutgersMap/DownloadMap.aspx})
+\url{http://compgen.rutgers.edu/download_maps.shtml})
 }
 \references{
 A second-generation combined linkage physical map of the human genome. 
@@ -35,6 +35,6 @@ Kong X, Murray SS, Ziegle JS, Stewart WC, Buyske S.
 Genome Res. 2007 Dec;17(12):1783-6. Epub 2007 Nov 7.
 }
 \examples{
-data(RutgersMapB36)
+data("RutgersMapB36")
 }
 \keyword{datasets}
